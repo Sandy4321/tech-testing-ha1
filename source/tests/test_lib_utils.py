@@ -31,6 +31,13 @@ class LibUtilsTestCase(unittest.TestCase):
         self.assertTrue(args.pidfile == pid)
         self.assertFalse(args.daemon)
 
+    def test_parse_cmd_args_2(self):
+        cfg = '/test'
+        pid = '/pid'
+        args = parse_cmd_args(['-c', cfg, '-d'], 'test')
+        self.assertTrue(args.config == cfg)
+        self.assertTrue(args.pidfile == pid)
+        self.assertTrue(args.daemon)
 
     def test_get_tube(self):
         host = 'host'
@@ -48,8 +55,8 @@ class LibUtilsTestCase(unittest.TestCase):
         parent_id = 1
         with patch.object(Process, 'start', return_value=None) as mock_process:
             spawn_workers(num, target, args, parent_id)
-        for _ in range(0, num, 1):
-            calls = []
+        calls = []
+        for _ in xrange(num):
             calls.append(call())
         mock_process.assert_has_calls(calls)
         mock_process.asert_called_with()
