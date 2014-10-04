@@ -4,6 +4,7 @@ from Queue import Queue
 from notification_pusher import *
 
 class NotificationPusherTestCase(unittest.TestCase):
+<<<<<<< HEAD
 
     def test_daemonize(self):
         fork_mock = mock.Mock(return_value=0)
@@ -44,3 +45,7 @@ class NotificationPusherTestCase(unittest.TestCase):
         queue.put_nowait((t, 'test1_method'))
         done_with_processed_tasks(queue)
         self.assertTrue(test1_passed)
+=======
+    def test_notification_worker(self):
+        pass
+>>>>>>> parent of ea079db... empty commit
