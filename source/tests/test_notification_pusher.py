@@ -1,17 +1,9 @@
 import unittest
 import mock
+from Queue import Queue
 from notification_pusher import *
 
 class NotificationPusherTestCase(unittest.TestCase):
-    def test_create_pidfile_example(self):
-        pid = 42
-        m_open = mock.mock_open()
-        with mock.patch('notification_pusher.open', m_open, create=True):
-            with mock.patch('os.getpid', mock.Mock(return_value=pid)):
-                create_pidfile('/file/path')
-
-        m_open.assert_called_once_with('/file/path', 'w')
-        m_open().write.assert_called_once_with(str(pid))
 
     def test_daemonize(self):
         fork_mock = mock.Mock(return_value=0)
@@ -39,3 +31,16 @@ class NotificationPusherTestCase(unittest.TestCase):
         with mock.patch('__builtin__.execfile', mocked_execfile):
             cfg = load_config_from_pyfile('/test')
         self.assertEqual(cfg.a, 23)
+
+    def test_done_with_processed_tasks(self):
+        test1_passed = False
+        class test1:
+            task_id = 4
+            def test1_method(self):
+                test1_passed = True
+
+        queue = Queue()
+        t = test1()
+        queue.put_nowait((t, 'test1_method'))
+        done_with_processed_tasks(queue)
+        self.assertTrue(test1_passed)
