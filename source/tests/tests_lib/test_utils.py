@@ -11,8 +11,8 @@ from random import randrange
 
 from lib.utils import *
 
-
 RANDOM_INT_OFFSET = 10000
+
 
 class LibUtilsTestCase(unittest.TestCase):
 
@@ -40,7 +40,6 @@ class LibUtilsTestCase(unittest.TestCase):
         with mock.patch('__builtin__.execfile', mocked_execfile):
             cfg = load_config_from_pyfile('/test')
         # self.assertEqual(cfg.a, 23)
-
 
     def test_create_pidfile_example(self):
         pid = randrange(RANDOM_INT_OFFSET)

@@ -19,14 +19,14 @@ OK_URL = re.compile(r'http(?:s)?://(www\.)?odnoklassniki\.ru/', re.I)
 MM_URL = re.compile(r'http(?:s)?://my\.mail\.ru/apps/', re.I)
 
 COUNTER_TYPES = (
-    ('GOOGLE_ANALYTICS', re.compile(r'.*google-analytics\.com/ga\.js.*', re.I+re.S)),
-    ('YA_METRICA', re.compile(r'.*mc\.yandex\.ru/metrika/watch\.js.*', re.I+re.S)),
-    ('TOP_MAIL_RU', re.compile(r'.*top-fwz1\.mail\.ru/counter.*', re.I+re.S)),
-    ('TOP_MAIL_RU', re.compile(r'.*top\.mail\.ru/jump\?from.*', re.I+re.S)),
-    ('DOUBLECLICK', re.compile(r'.*//googleads\.g\.doubleclick\.net/pagead/viewthroughconversion.*', re.I+re.S)),
-    ('VISUALDNA', re.compile(r'.*//a1\.vdna-assets\.com/analytics\.js.*', re.I+re.S)),
-    ('LI_RU', re.compile(r'.*/counter\.yadro\.ru/hit.*', re.I+re.S)),
-    ('RAMBLER_TOP100', re.compile(r'.*counter\.rambler\.ru/top100.*', re.I+re.S))
+    ('GOOGLE_ANALYTICS', re.compile(r'.*google-analytics\.com/ga\.js.*', re.I + re.S)),
+    ('YA_METRICA', re.compile(r'.*mc\.yandex\.ru/metrika/watch\.js.*', re.I + re.S)),
+    ('TOP_MAIL_RU', re.compile(r'.*top-fwz1\.mail\.ru/counter.*', re.I + re.S)),
+    ('TOP_MAIL_RU', re.compile(r'.*top\.mail\.ru/jump\?from.*', re.I + re.S)),
+    ('DOUBLECLICK', re.compile(r'.*//googleads\.g\.doubleclick\.net/pagead/viewthroughconversion.*', re.I + re.S)),
+    ('VISUALDNA', re.compile(r'.*//a1\.vdna-assets\.com/analytics\.js.*', re.I + re.S)),
+    ('LI_RU', re.compile(r'.*/counter\.yadro\.ru/hit.*', re.I + re.S)),
+    ('RAMBLER_TOP100', re.compile(r'.*counter\.rambler\.ru/top100.*', re.I + re.S))
 )
 
 
@@ -71,7 +71,9 @@ def check_for_meta(content, url):
 
 def fix_market_url(url):
     """Преобразует market:// урлы в http://"""
-    return 'http://play.google.com/store/apps/' + url.lstrip("market://")
+    if url[:"market://".__len__()] == "market://":
+        url = url["market://".__len__():]
+    return 'http://play.google.com/store/apps/' + url
 
 
 def make_pycurl_request(url, timeout, useragent=None):
