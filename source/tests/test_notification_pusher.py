@@ -8,6 +8,7 @@ import tarantool
 import tarantool_queue
 from gevent import queue as gevent_queue
 
+import notification_pusher
 from notification_pusher import *
 
 
