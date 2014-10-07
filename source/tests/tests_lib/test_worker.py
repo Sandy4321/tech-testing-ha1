@@ -6,6 +6,8 @@ from mock import patch, MagicMock, call
 from lib.worker import *
 import lib.worker
 
+DEFAULT_URL = 'http://myurl.com:8080/folder/file.exe'
+
 
 class Task:
     pass
@@ -14,20 +16,20 @@ class Task:
 class LibWorkerTestCase(unittest.TestCase):
     def test_get_redirect_history_from_task_1(self):
         task = Task()
-        task.data = {'url': 'http://myurl.com:8080/folder/file.exe', 'not_recheck': 'not_recheck', 'url_id': 2}
-        final_data = {'url': 'http://myurl.com:8080/folder/file.exe', 'not_recheck': 'not_recheck', 'url_id': 2,
+        task.data = {'url': DEFAULT_URL, 'not_recheck': 'not_recheck', 'url_id': 2}
+        final_data = {'url': DEFAULT_URL, 'not_recheck': 'not_recheck', 'url_id': 2,
                       'recheck': True}
         task.task_id = 1
-        with patch.object(logger, 'info', return_value=None):
-            with patch.object(lib.worker, 'get_redirect_history', return_value=(['ERROR'], [], [])):
-                result = get_redirect_history_from_task(task, 1)
+        # with patch.object(logger, 'info', return_value=None):
+        with patch.object(lib.worker, 'get_redirect_history', return_value=(['ERROR'], [], [])):
+            result = get_redirect_history_from_task(task, 1)
         self.assertTrue(result == (True, final_data))
 
     def test_get_redirect_history_from_task_2(self):
         task = Task()
         url_id = 2
+        task.data = {'url': DEFAULT_URL, 'not_recheck': 'not_recheck', 'url_id': + url_id}
         res = [[], [], []]
-        task.data = {'url': 'http://myurl.com:8080/folder/file.exe', 'not_recheck': 'not_recheck', 'url_id': + url_id}
         final_data = {
             "url_id": url_id,
             "result": res,
@@ -42,10 +44,14 @@ class LibWorkerTestCase(unittest.TestCase):
     def test_get_redirect_history_from_task_3(self):
         task = Task()
         url_id = 2
-        res = [[], [], []]
         suspicious = 'suspicious'
-        task.data = {'url': 'http://myurl.com:8080/folder/file.exe', 'not_recheck': 'not_recheck', 'url_id': + url_id,
-                     'suspicious': suspicious}
+        task.data = {
+            'url': DEFAULT_URL,
+            'not_recheck': 'not_recheck',
+            'url_id': + url_id,
+            'suspicious': suspicious
+        }
+        res = [[], [], []]
         final_data = {
             "url_id": url_id,
             "result": res,
@@ -133,7 +139,7 @@ class LibWorkerTestCase(unittest.TestCase):
         data = []
         with patch('lib.worker.get_tube', MagicMock(return_value=tube)):
             with patch.object(logger, 'info', return_type=None):
-                with patch('lib.worker.os.path.exists', MagicMock(side_effect=(True,False))):
+                with patch('lib.worker.os.path.exists', MagicMock(side_effect=(True, False))):
                     with patch('lib.worker.get_redirect_history_from_task', MagicMock(return_value=(None, data))):
                         worker(config, 1)
         tube.put.assert_called_once_with(data)
@@ -156,4 +162,4 @@ class LibWorkerTestCase(unittest.TestCase):
                     with patch('lib.worker.get_redirect_history_from_task', MagicMock(return_value=(True, data))):
                         worker(config, 1)
         task.ack.assert_called_once_with()
-        mock_logger.assert_has_calls([call('Task ack fail'), call('Parent is dead. exiting')], False)
+        mock_logger.assert_has_calls([call('Task ack fail'), call('Parent is dead. exiting')])

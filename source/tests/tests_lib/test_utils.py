@@ -1,13 +1,11 @@
 __author__ = 'gumo'
 import unittest
 import mock
-from mock import patch, call
-
+from mock import patch, call, Mock
+import exceptions
 from random import randrange
 
 from lib.utils import *
-
-RANDOM_INT_OFFSET = 10000
 
 
 class LibUtilsTestCase(unittest.TestCase):
@@ -25,20 +23,18 @@ class LibUtilsTestCase(unittest.TestCase):
                 daemonize()
         mock_exit.assert_called_once_with(0)
 
+    # def test_daemonize_3(self):
+    #     with patch('os.fork', Mock(side_effect=(0, 1))) as fork_mock:
+    #         with mock.patch('os.setsid', mock.Mock(), create=True) as fork_setsid:
+    #             daemonize()
+    #     fork_mock.assert_called_with()
+    #     fork_setsid.assert_called_once_with()
+
     def test_load_config_from_pyfile(self):
-        def mocked_execfile(filepath, variables):
-            variables = {
-                'a': 23,
-                'death': 42
-            }
-
-
-        with mock.patch('__builtin__.execfile', mocked_execfile):
-            cfg = load_config_from_pyfile('/test')
-        # self.assertEqual(cfg.a, 23)
+        pass
 
     def test_create_pidfile_example(self):
-        pid = randrange(RANDOM_INT_OFFSET)
+        pid = 42
         m_open = mock.mock_open()
         with mock.patch('lib.utils.open', m_open, create=True):
             with mock.patch('os.getpid', mock.Mock(return_value=pid)):
@@ -65,15 +61,15 @@ class LibUtilsTestCase(unittest.TestCase):
 
     def test_get_tube(self):
         host = 'host'
-        port = randrange(RANDOM_INT_OFFSET)
-        space = randrange(RANDOM_INT_OFFSET)
+        port = 42
+        space = 322
         name = 'name'
         with patch.object(tarantool_queue.Queue, 'tube', return_value=None) as mock_queue:
             get_tube(host, port, space, name)
         mock_queue.assert_called_once_with(name)
 
     def test_spawn_workers(self):
-        num = randrange(RANDOM_INT_OFFSET)
+        num = 42
         target = 'target'
         args = ['', '']
         parent_id = 1

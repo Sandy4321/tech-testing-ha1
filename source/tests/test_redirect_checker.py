@@ -20,6 +20,7 @@ from lib.worker import worker
 
 from redirect_checker import (main, main_loop)
 
+
 class RedirectCheckerTestCase(unittest.TestCase):
 
     def test_main_loop_1(self):
