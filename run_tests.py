@@ -11,7 +11,7 @@ from tests.test_notification_pusher import NotificationPusherTestCase
 from tests.test_redirect_checker import RedirectCheckerTestCase
 from tests.tests_lib.test_utils import LibUtilsTestCase
 from tests.tests_lib.test_init import LibInitTestCase
-
+from tests.tests_lib.test_worker import LibWorkerTestCase
 
 if __name__ == '__main__':
     suite = unittest.TestSuite((
@@ -19,6 +19,7 @@ if __name__ == '__main__':
         unittest.makeSuite(RedirectCheckerTestCase),
         unittest.makeSuite(LibUtilsTestCase),
         unittest.makeSuite(LibInitTestCase),
+        unittest.makeSuite(LibWorkerTestCase)
     ))
     result = unittest.TextTestRunner().run(suite)
     sys.exit(not result.wasSuccessful())

@@ -1,18 +1,7 @@
 __author__ = 'gumo'
 import unittest
-import mock
-from mock import patch, call, MagicMock
+from mock import patch, MagicMock
 
-from StringIO import StringIO
-from logging import getLogger, NullHandler
-import re
-from urllib import quote, quote_plus
-from urlparse import urljoin, urlsplit, urlparse, urlunparse
-
-from bs4 import BeautifulSoup
-import pycurl
-
-from random import randrange
 import lib
 from lib.__init__ import *
 
@@ -31,6 +20,23 @@ class LibInitTestCase(unittest.TestCase):
     def test_get_counters_2(self):
         with patch.object(re, 'match', return_value=False):
             self.assertTrue(get_counters("") == [])
+
+    def test_check_for_meta_1(self):
+        result = check_for_meta('<meta http-equiv="refresh" content="SECONDS;NO_URL">', 'http://myurl.com:8080/folder/file.exe')
+        self.assertTrue(result is None)
+
+    def test_check_for_meta_2(self):
+        redirect_url = 'http://redirecturl.com:8080/folder/file.exe'
+        result = check_for_meta('<meta http-equiv="refresh" content="SECONDS;url=' + redirect_url + '">', 'http://myurl.com:8080/folder/file.exe')
+        self.assertTrue(result == redirect_url)
+
+    def test_check_for_meta_3(self):
+        result = check_for_meta('<meta http-equiv="refresh" content="SECONDS;NO_URL;THIRD_ARG">', 'http://myurl.com:8080/folder/file.exe')
+        self.assertTrue(result is None)
+
+    def test_check_for_meta_4(self):
+        result = check_for_meta('<non_meta http-equiv="refresh" content="SECONDS;NO_URL;THIRD_ARG">', 'http://myurl.com:8080/folder/file.exe')
+        self.assertTrue(result is None)
 
     def test_fix_market_url(self):
         self.assertTrue(fix_market_url('http://myurl.com:8080/folder/file.exe') == 'http://play.google.com/store/apps/http://myurl.com:8080/folder/file.exe')
@@ -86,6 +92,15 @@ class LibInitTestCase(unittest.TestCase):
             with patch.object(TESTING_CLASS, 'fix_market_url', return_value=fixed_url):
                 result = get_url(url, None)
         self.assertTrue(result == (fixed_url, REDIRECT_HTTP, content))
+
+    def test_get_url_6(self):
+        url = 'http://myurl.com:8080/folder/file.exe'
+        new_url = 'http://mynewurl.com:8080/folder/file.exe'
+        content = 'content'
+        with patch.object(TESTING_CLASS, 'make_pycurl_request', return_value=(content, None)):
+            with patch.object(TESTING_CLASS, 'check_for_meta', return_value=None):
+                result = get_url(url, None)
+        self.assertTrue(result == (None, None, content))
 
     def test_redirect_history_ok(self):
         url = "http://www.odnoklassniki.ru/"
@@ -144,3 +159,16 @@ class LibInitTestCase(unittest.TestCase):
         with patch.object(TESTING_CLASS, 'urlparse', return_value=(scheme, netloc, path, qs, anchor, fragments)):
             result = prepare_url(url)
         self.assertTrue(result == 'scheme://netloc/path;qs?anchor#fragments')
+
+    # def test_prepare_url_3(self):
+    #     url = 'http://myurl.com:8080/folder/file.exe'
+    #     scheme = 'scheme'
+    #     netloc = 'netloc'
+    #     path = 'path'
+    #     qs = 'qs'
+    #     anchor = 'anchor'
+    #     fragments = 'fragments'
+    #     with patch.object(TESTING_CLASS, 'urlparse', return_value=(scheme, netloc, path, qs, anchor, fragments)):
+    #         with patch.object(str, 'encode', side_effect=UnicodeError):
+    #             result = prepare_url(url)
+    #     self.assertTrue(result == 'scheme://netloc/path;qs?anchor#fragments')
