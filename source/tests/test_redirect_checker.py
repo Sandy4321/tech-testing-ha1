@@ -64,3 +64,37 @@ class RedirectCheckerTestCase(unittest.TestCase):
             c.terminate().assert_called_with()
 
 
+    def test_main_1(self):
+        args = '1 -c /conf -d'
+        args = args.split(' ')
+
+        conf = Mock()
+        conf.LOGGING = {}
+        conf.EXIT_CODE = 1222
+        with patch("redirect_checker.daemonize") as mock_daemonize:
+            with patch("redirect_checker.load_config_from_pyfile", Mock(return_value=conf)):
+                with patch("redirect_checker.main_loop") as mock_main_loop:
+                    with patch("os.path.realpath"), patch("os.path.expanduser"):
+                        with patch("redirect_checker.dictConfig"):
+                            self.assertEqual(main(args), 1222)
+        mock_main_loop.assert_called_with(conf)
+        mock_daemonize.assert_called_with()
+
+    def test_main_2(self):
+        args = '1 -c /conf -P /pidfile'
+        args = args.split(' ')
+
+        conf = Mock()
+        conf.LOGGING = {}
+        conf.EXIT_CODE = 1222
+        with patch("redirect_checker.create_pidfile") as mock_create_pidfile:
+            with patch("redirect_checker.load_config_from_pyfile", Mock(return_value=conf)):
+                with patch("redirect_checker.main_loop") as mock_main_loop:
+                    with patch("os.path.realpath"), patch("os.path.expanduser"):
+                        with patch("redirect_checker.dictConfig"):
+                            self.assertEqual(main(args), 1222)
+        mock_main_loop.assert_called_with(conf)
+        mock_create_pidfile.assert_called_with("/pidfile")
+
+
+##
