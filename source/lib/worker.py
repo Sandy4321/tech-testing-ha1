@@ -3,7 +3,7 @@ from logging import getLogger
 import os.path
 
 from tarantool.error import DatabaseError
-from . import to_unicode, get_redirect_history
+from lib.__init__ import to_unicode, get_redirect_history
 
 from utils import get_tube
 

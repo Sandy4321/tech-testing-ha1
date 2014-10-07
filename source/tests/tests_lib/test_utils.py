@@ -3,10 +3,6 @@ import unittest
 import mock
 from mock import patch, call
 
-from tarantool_queue import tarantool_queue
-from multiprocessing import Process
-import os
-
 from random import randrange
 
 from lib.utils import *
