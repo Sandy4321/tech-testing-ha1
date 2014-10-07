@@ -3,7 +3,6 @@ __author__ = 'gumo'
 import unittest
 from mock import patch, MagicMock, call
 
-from lib import __init__
 from lib.worker import *
 import lib.worker
 
