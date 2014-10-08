@@ -6,7 +6,7 @@ import lib
 from lib.__init__ import *
 
 TESTING_CLASS = lib.__init__
-
+DEFAULT_URL = 'http://myurl.com:8080/folder/file.exe'
 
 class LibInitTestCase(unittest.TestCase):
 
@@ -22,42 +22,40 @@ class LibInitTestCase(unittest.TestCase):
             self.assertTrue(get_counters("") == [])
 
     def test_check_for_meta_1(self):
-        result = check_for_meta('<meta http-equiv="refresh" content="SECONDS;NO_URL">', 'http://myurl.com:8080/folder/file.exe')
+        result = check_for_meta('<meta http-equiv="refresh" content="SECONDS;NO_URL">', DEFAULT_URL)
         self.assertTrue(result is None)
 
     def test_check_for_meta_2(self):
         redirect_url = 'http://redirecturl.com:8080/folder/file.exe'
-        result = check_for_meta('<meta http-equiv="refresh" content="SECONDS;url=' + redirect_url + '">', 'http://myurl.com:8080/folder/file.exe')
+        result = check_for_meta('<meta http-equiv="refresh" content="SECONDS;url=' + redirect_url + '">', DEFAULT_URL)
         self.assertTrue(result == redirect_url)
 
     def test_check_for_meta_3(self):
-        result = check_for_meta('<meta http-equiv="refresh" content="SECONDS;NO_URL;THIRD_ARG">', 'http://myurl.com:8080/folder/file.exe')
+        result = check_for_meta('<meta http-equiv="refresh" content="SECONDS;NO_URL;THIRD_ARG">', DEFAULT_URL)
         self.assertTrue(result is None)
 
     def test_check_for_meta_4(self):
-        result = check_for_meta('<non_meta http-equiv="refresh" content="SECONDS;NO_URL;THIRD_ARG">', 'http://myurl.com:8080/folder/file.exe')
+        result = check_for_meta('<non_meta http-equiv="refresh" content="SECONDS;NO_URL">', DEFAULT_URL)
         self.assertTrue(result is None)
 
     def test_fix_market_url(self):
-        self.assertTrue(fix_market_url('http://myurl.com:8080/folder/file.exe') == 'http://play.google.com/store/apps/http://myurl.com:8080/folder/file.exe')
+        self.assertTrue(fix_market_url(DEFAULT_URL) == 'http://play.google.com/store/apps/http://myurl.com:8080/folder/file.exe')
         self.assertTrue(fix_market_url('market://myurl.com:8080/folder/file.exe') == 'http://play.google.com/store/apps/myurl.com:8080/folder/file.exe')
 
     def test_make_pycurl_request(self):
-        url = 'http://myurl.com:8080/folder/file.exe'
         mock_curl = pycurl.Curl()
         mock_curl.setopt = MagicMock(return_value=None)
         mock_curl.perform = MagicMock(return_value=None)
-        mock_curl.getinfo = MagicMock(return_value=url)
+        mock_curl.getinfo = MagicMock(return_value=DEFAULT_URL)
         with patch.object(pycurl, 'Curl', return_value=mock_curl):
-            result = make_pycurl_request('http://myurl.com:8080/folder/file.exe', 1)
-        self.assertTrue(result == ("", url))
+            result = make_pycurl_request(DEFAULT_URL, 1)
+        self.assertTrue(result == ("", DEFAULT_URL))
         mock_curl.perform.assert_called_once_with()
 
     def test_get_url_1(self):
-        url = 'http://myurl.com:8080/folder/file.exe'
         with patch.object(TESTING_CLASS, 'make_pycurl_request', side_effect=ValueError):
-            result = get_url(url, 1)
-        self.assertTrue(result == (url, 'ERROR', None))
+            result = get_url(DEFAULT_URL, 1)
+        self.assertTrue(result == (DEFAULT_URL, 'ERROR', None))
 
     def test_get_url_2(self):
         url = 'http://odnoklassniki.ru/st.redirect'
@@ -169,6 +167,6 @@ class LibInitTestCase(unittest.TestCase):
     #     anchor = 'anchor'
     #     fragments = 'fragments'
     #     with patch.object(TESTING_CLASS, 'urlparse', return_value=(scheme, netloc, path, qs, anchor, fragments)):
-    #         with patch.object(str, 'encode', side_effect=UnicodeError):
+    #         with patch('lib.__init__.encode', MagicMock(side_effect=UnicodeError)):
     #             result = prepare_url(url)
     #     self.assertTrue(result == 'scheme://netloc/path;qs?anchor#fragments')
