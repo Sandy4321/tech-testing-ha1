@@ -30,8 +30,17 @@ class LibUtilsTestCase(unittest.TestCase):
     #     fork_mock.assert_called_with()
     #     fork_setsid.assert_called_once_with()
 
+    def execfile_patch(self, filepath, varaibles):
+        varaibles['UPPER_CASE'] = 'UPPER_CASE_VALUE'
+        varaibles['lover_case'] = 'lover_case_value'
+        varaibles['UPPER_lover_CaSe'] = 'UPPER_lover_CaSe'
+
     def test_load_config_from_pyfile(self):
-        pass
+        with patch('__builtin__.execfile', side_effect=self.execfile_patch):
+            result = load_config_from_pyfile('filepath')
+        self.assertTrue(result.UPPER_CASE == 'UPPER_CASE_VALUE')
+        self.assertFalse(hasattr(result, 'lover_case'))
+        self.assertFalse(hasattr(result, 'UPPER_lover_CaSe'))
 
     def test_create_pidfile_example(self):
         pid = 42
@@ -80,3 +89,13 @@ class LibUtilsTestCase(unittest.TestCase):
             calls.append(call())
         mock_process.assert_has_calls(calls)
         mock_process.asert_called_with()
+
+    def test_check_network_status_1(self):
+        with patch('urllib2.urlopen', return_value=None):
+            result = check_network_status("", 0)
+        self.assertTrue(result)
+
+    def test_check_network_status_2(self):
+        with patch('urllib2.urlopen', side_effect=socket.error):
+            result = check_network_status("", 0)
+        self.assertFalse(result)
