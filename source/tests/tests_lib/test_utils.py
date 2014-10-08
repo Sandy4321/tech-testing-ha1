@@ -12,8 +12,8 @@ class LibUtilsTestCase(unittest.TestCase):
 
     def test_daemonize_1(self):
         fork_mock = mock.Mock(return_value=0)
-        with mock.patch('os.fork', fork_mock):
-            with mock.patch('os.setsid', mock.Mock(), create=True):
+        with patch('os.fork', fork_mock):
+            with patch('os.setsid', mock.Mock(), create=True):
                 daemonize()
         fork_mock.assert_called_with()
 
@@ -25,10 +25,9 @@ class LibUtilsTestCase(unittest.TestCase):
 
     # def test_daemonize_3(self):
     #     with patch('os.fork', Mock(side_effect=(0, 1))) as fork_mock:
-    #         with mock.patch('os.setsid', mock.Mock(), create=True) as fork_setsid:
+    #         with mock.patch('os.setsid', mock.Mock(), create=True):
     #             daemonize()
     #     fork_mock.assert_called_with()
-    #     fork_setsid.assert_called_once_with()
 
     def execfile_patch(self, filepath, varaibles):
         varaibles['UPPER_CASE'] = 'UPPER_CASE_VALUE'

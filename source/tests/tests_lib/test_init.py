@@ -167,6 +167,6 @@ class LibInitTestCase(unittest.TestCase):
     #     anchor = 'anchor'
     #     fragments = 'fragments'
     #     with patch.object(TESTING_CLASS, 'urlparse', return_value=(scheme, netloc, path, qs, anchor, fragments)):
-    #         with patch.object(str, 'encode', side_effect=UnicodeError):
+    #         with patch('lib.__init__.encode', MagicMock(side_effect=UnicodeError)):
     #             result = prepare_url(url)
     #     self.assertTrue(result == 'scheme://netloc/path;qs?anchor#fragments')
