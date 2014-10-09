@@ -34,8 +34,8 @@ class RedirectCheckerTestCase(unittest.TestCase):
                             main_loop(config)
                         except Exception:
                             pass
-        mock_spawn_workers.assert_called_once()
-
+        assert mock_spawn_workers.called
+        
     def test_main_loop_2(self):
         config = Mock()
         config.WORKER_POOL_SIZE = 0
